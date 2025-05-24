@@ -45,8 +45,7 @@ class ImageProcessor:
             elif "!右腕" == layer.parent.name and "*白ロリ服" == layer.parent.parent.name:
                 layer.visible = False
         return self._compose_and_resize(self.psd, file_name, size, flip)
-    
-    
+        
     def get_zundamon_img(self,file_name, eye="*普通目", eyebrow="*普通眉", mouth="*ほあ", right="*基本", left="*基本", size=0.55, flip=True, shadow=False):
         """ずんだもん画像を合成して返す"""
         for layer in list(self.psd.descendants()):
@@ -83,7 +82,6 @@ class ImageProcessor:
             elif "!右腕" == layer.parent.name and "*服装1" == layer.parent.parent.name:
                 layer.visible = False
         return self._compose_and_resize(self.psd, file_name, size, flip)
-
     
     def _compose_and_resize(self, psd, file_name: str, size: float, flip: bool = False) -> pygame.Surface:
         """PSDを合成し、リサイズ・反転してpygame画像として返す"""

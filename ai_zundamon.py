@@ -21,8 +21,8 @@ ZUNDAMON = True
 
 # 状態管理
 state = {
-    "is_speaking": False,
-    "spoken_text": ""
+    'is_speaking': False,
+    'spoken_text': ''
 }
 
 
@@ -32,28 +32,28 @@ def background_task(client, user_input, window, user_tts, response_tts):
         user_tts.tts_speak(user_input)
         reply = client.generate_text(user_input)
         window.write_event_value('-RESPONSE-', (user_input, reply))
-        state["is_speaking"] = True
-        texts = reply.split("\n")
+        state['is_speaking'] = True
+        texts = reply.split('\n')
         for text in texts:
             response_tts.tts_speak(text)
-            state["spoken_text"] = text
+            state['spoken_text'] = text
             while response_tts.get_play():
                 pass
         # 会話完了を待つ
         response_tts.wait_play()
     except Exception as e:
-        window.write_event_value('-RESPONSE-', (user_input, f"[エラー] {e}"))
+        window.write_event_value('-RESPONSE-', (user_input, f'[エラー] {e}'))
     finally:
-        state["is_speaking"] = False
-        state["spoken_text"] = ""
+        state['is_speaking'] = False
+        state['spoken_text'] = ''
 
 
 def initialize_client():
     """LMStudioClientを初期化"""
     try:
-        return LMStudioClient("http://localhost:1234/v1", "gemma-3-1b-it")
+        return LMStudioClient('http://localhost:1234/v1', 'gemma-3-1b-it')
     except Exception as e:
-        print("クライアント初期化に失敗:", e)
+        print('クライアント初期化に失敗:', e)
         return None
 
 
@@ -63,9 +63,9 @@ def create_gui_window():
     layout = [
         [sg.Multiline(size=(80, 20), key='-OUTPUT-', disabled=True, autoscroll=True)],
         [sg.Multiline(size=(80, 5), key='-INPUT-', enter_submits=True)],
-        [sg.Button("送信", bind_return_key=True), sg.Button("終了")]
+        [sg.Button('送信', bind_return_key=True), sg.Button('終了')]
     ]
-    return sg.Window("LM Studio チャット", layout, finalize=True)
+    return sg.Window('LM Studio チャット', layout, finalize=True)
 
 
 def load_character_images(image_processor):
@@ -89,7 +89,7 @@ def load_character_images(image_processor):
 def handle_send(user_input, window, client, user_tts, response_tts):
     """ユーザー入力を非同期で処理"""
     window['-INPUT-'].update("") # 入力欄クリア
-    window['-OUTPUT-'].update(f"あなた: {user_input}\n", append=True) # 出力欄にユーザー入力表示
+    window['-OUTPUT-'].update(f'あなた: {user_input}\n', append=True) # 出力欄にユーザー入力表示
     threading.Thread(
         target=background_task,
         args=(client, user_input, window, user_tts, response_tts),
@@ -99,7 +99,7 @@ def handle_send(user_input, window, client, user_tts, response_tts):
 
 def animate_zundamon(display, image_list,  image_index, mouth_counter):
     """口パク制御"""
-    if state["is_speaking"]:
+    if state['is_speaking']:
         if mouth_counter > MOUTH_OPEN_TIME:
             display.draw_character(image_list[image_index], ZUNDAMON_POSITION)
         if mouth_counter > MOUTH_OPEN_TIME + MOUTH_CLOSE_TIME:
@@ -139,24 +139,24 @@ def main_loop(window, client, user_tts, response_tts, display, image_list):
     try:
         while True:
             event, values = window.read(timeout=fps)
-            if event in (sg.WINDOW_CLOSED, "終了"):
+            if event in (sg.WINDOW_CLOSED, '終了'):
                 break
-            elif event == "送信":
+            elif event == '送信':
                 user_input = values['-INPUT-'].strip()
                 if user_input:
                     handle_send(user_input, window, client, user_tts, response_tts)
             elif event == '-RESPONSE-':
                 user_input, reply = values['-RESPONSE-']
-                window['-OUTPUT-'].update(f"AI: {reply}\n\n", append=True)
+                window['-OUTPUT-'].update(f'AI: {reply}\n\n', append=True)
             pygame.event.pump()
             display.refresh()
             display.draw_character(image_list[image_index + IMAGE_NORMAL_FACE], ZUNDAMON_POSITION)
             # ここで口パク状態に応じて描画する画像を決定
             mouth_counter = animate_zundamon(display, image_list, image_index, mouth_counter)
-            draw_spoken_text(display, state["spoken_text"], FONT_SIZE)
+            draw_spoken_text(display, state['spoken_text'], FONT_SIZE)
             display.update()
     except Exception as e:
-        window['-OUTPUT-'].update(f"[致命的エラー] {e}\n", append=True)
+        window['-OUTPUT-'].update(f'[致命的エラー] {e}\n', append=True)
     finally:
         window.close()
         pygame.quit()
@@ -171,17 +171,17 @@ def main():
     if ZUNDAMON:
         user_tts = TTSManager(id=2)
         response_tts = TTSManager(id=1)
-        image_processor = ImageProcessor("ずんだもん立ち絵素材2.3.psd")
+        image_processor = ImageProcessor('ずんだもん立ち絵素材2.3.psd')
     else:
         user_tts = TTSManager(id=1)
         response_tts = TTSManager(id=2)
-        image_processor = ImageProcessor("四国めたん立ち絵素材2.1.psd")
+        image_processor = ImageProcessor('四国めたん立ち絵素材2.1.psd')
 
     display = VisualDisplay(
-        bg_image="昭和レトロな茶の間（照明ON）.jpg",
-        font_path="./msyhbd.ttc",
-        font_size=FONT_SIZE,
-        screen_size=SCREEN_SIZE
+        bg_image = '昭和レトロな茶の間（照明ON）.jpg',
+        font_path = './msyhbd.ttc',
+        font_size = FONT_SIZE,
+        screen_size = SCREEN_SIZE
     )
     image_list = load_character_images(image_processor)
     main_loop(window, client, user_tts, response_tts, display, image_list)
