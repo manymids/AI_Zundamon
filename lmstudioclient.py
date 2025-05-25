@@ -12,7 +12,7 @@ class LMStudioClient:
             print(f"API接続エラー: {e}")
             raise
     
-    def generate_text(self, text: str):
+    def get_response(self, text: str):
         """APIを使って応答文を生成"""
         print(f"質問: {text}")
         try:

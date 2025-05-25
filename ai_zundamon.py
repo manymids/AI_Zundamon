@@ -30,7 +30,7 @@ def background_task(client, user_input, window, user_tts, response_tts):
     """バックグラウンドでAI応答とTTSを処理"""
     try:
         user_tts.tts_speak(user_input)
-        reply = client.generate_text(user_input)
+        reply = client.get_response(user_input)
         window.write_event_value('-RESPONSE-', (user_input, reply))
         state['is_speaking'] = True
         texts = reply.split('\n')
@@ -48,7 +48,7 @@ def background_task(client, user_input, window, user_tts, response_tts):
         state['spoken_text'] = ''
 
 
-def initialize_client():
+def create_client():
     """LMStudioClientを初期化"""
     try:
         return LMStudioClient('http://localhost:1234/v1', 'gemma-3-1b-it')
@@ -68,21 +68,21 @@ def create_gui_window():
     return sg.Window('LM Studio チャット', layout, finalize=True)
 
 
-def load_character_images(image_processor):
+def get_character_images(image_processor):
     """キャラクター画像を読み込んでリストで返す"""
     if ZUNDAMON:
         return [
-            image_processor.get_zundamon_img("zundamon_normal_close_mouth.png", mouth="*むふ", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_img("zundamon_normal_close_eye.png", eye="*なごみ目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_img("zundamon_normal.png", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_img("zundamon_normal2.png", eye="*上向き" ,mouth="*むふ" , left="*基本", right="*基本", size=1.0, flip=False)
+            image_processor.get_zundamon_image("zundamon_normal_close_mouth.png", mouth="*むふ", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image("zundamon_normal_close_eye.png", eye="*なごみ目" ,left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image("zundamon_normal.png", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image("zundamon_normal2.png", eye="*上向き" ,mouth="*むふ" , left="*基本", right="*基本", size=1.0, flip=False)
        ]
     else:
         return [
-            image_processor.get_metan_img("metan_normal.png", eye="*普通目", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_img("metan_normal_close_eye.png", eye="*目閉じ", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_img("metan_normal_close_mouth.png", mouth="*ほほえみ", eye="*普通目", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_img("metan_normal_close_mouth2.png", mouth="*ほほえみ", eye="*カメラ目線", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image("metan_normal.png", eye="*普通目", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image("metan_normal_close_eye.png", eye="*目閉じ", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image("metan_normal_close_mouth.png", mouth="*ほほえみ", eye="*普通目", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image("metan_normal_close_mouth2.png", mouth="*ほほえみ", eye="*カメラ目線", right="*普通", left="*普通", size=1.0),
         ]
 
 
@@ -97,7 +97,7 @@ def handle_send(user_input, window, client, user_tts, response_tts):
     ).start()
 
 
-def animate_zundamon(display, image_list,  image_index, mouth_counter):
+def draw_zundamon_mouth(display, image_list,  image_index, mouth_counter):
     """口パク制御"""
     if state['is_speaking']:
         if mouth_counter > MOUTH_OPEN_TIME:
@@ -108,7 +108,7 @@ def animate_zundamon(display, image_list,  image_index, mouth_counter):
     return mouth_counter
 
 
-def draw_spoken_text(display, text, font_size):
+def draw_speech_text(display, text, font_size):
     """話しているテキストを描画"""
     if not text:
         return
@@ -129,6 +129,7 @@ def draw_spoken_text(display, text, font_size):
     for row, i in enumerate(range(0, len(text), MAX_TEXT_LENGTH)):
         line = text[i:i + MAX_TEXT_LENGTH]
         display.draw_text_outline(bg_x, bg_y + row * (font_size + 3), line, (255, 102, 255), (255, 255, 255))
+
 
 def main_loop(window, client, user_tts, response_tts, display, image_list):
     """メインループ"""
@@ -152,8 +153,8 @@ def main_loop(window, client, user_tts, response_tts, display, image_list):
             display.refresh()
             display.draw_character(image_list[image_index + IMAGE_NORMAL_FACE], ZUNDAMON_POSITION)
             # ここで口パク状態に応じて描画する画像を決定
-            mouth_counter = animate_zundamon(display, image_list, image_index, mouth_counter)
-            draw_spoken_text(display, state['spoken_text'], FONT_SIZE)
+            mouth_counter = draw_zundamon_mouth(display, image_list, image_index, mouth_counter)
+            draw_speech_text(display, state['spoken_text'], FONT_SIZE)
             display.update()
     except Exception as e:
         window['-OUTPUT-'].update(f'[致命的エラー] {e}\n', append=True)
@@ -164,7 +165,7 @@ def main_loop(window, client, user_tts, response_tts, display, image_list):
 
 def main():
     """各種初期化とメインループ開始"""
-    client = initialize_client()
+    client = create_client()
     if not client:
         return
     window = create_gui_window()
@@ -183,7 +184,7 @@ def main():
         font_size = FONT_SIZE,
         screen_size = SCREEN_SIZE
     )
-    image_list = load_character_images(image_processor)
+    image_list = get_character_images(image_processor)
     main_loop(window, client, user_tts, response_tts, display, image_list)
 
 

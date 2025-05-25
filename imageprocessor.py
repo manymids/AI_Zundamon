@@ -12,7 +12,7 @@ class ImageProcessor:
     def __init__(self, file_name):
         self.psd = PSDImage.open(file_name)
 
-    def get_metan_img(self, file_name, eye="*普通目", eyebrow="*ごきげん", mouth="*わあー", right="*普通", left="*普通", size=0.5, flip=False, shadow=False):
+    def get_metan_image(self, file_name, eye="*普通目", eyebrow="*ごきげん", mouth="*わあー", right="*普通", left="*普通", size=0.5, flip=False, shadow=False):
         """めたん画像を合成して返す"""
         for layer in list(self.psd.descendants()):
             if "!眉" == layer.parent.name:
@@ -46,7 +46,7 @@ class ImageProcessor:
                 layer.visible = False
         return self._compose_and_resize(self.psd, file_name, size, flip)
         
-    def get_zundamon_img(self,file_name, eye="*普通目", eyebrow="*普通眉", mouth="*ほあ", right="*基本", left="*基本", size=0.55, flip=True, shadow=False):
+    def get_zundamon_image(self, file_name, eye="*普通目", eyebrow="*普通眉", mouth="*ほあ", right="*基本", left="*基本", size=0.55, flip=True, shadow=False):
         """ずんだもん画像を合成して返す"""
         for layer in list(self.psd.descendants()):
             if "眉" in layer.name and "*" in layer.name:
