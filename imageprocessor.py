@@ -1,10 +1,10 @@
 import cv2
-from psd_tools import PSDImage
 import pygame
-from pygame.locals import *
-from pathlib import Path
 import tempfile
 import os
+from pygame.locals import *
+from pathlib import Path
+from psd_tools import PSDImage
 
 class ImageProcessor:
     """PSD画像からキャラクター画像を合成・加工するクラス"""

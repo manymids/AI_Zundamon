@@ -1,10 +1,8 @@
 import os
 import re
-from pathlib import Path
-
 import pygame
+from pathlib import Path
 from voicevox_core import VoicevoxCore
-
 
  # TTSマネージャー
 class TTSManager:

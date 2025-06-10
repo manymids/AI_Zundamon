@@ -1,3 +1,4 @@
+"""AIずんだもん"""
 import threading
 import pygame
 import PySimpleGUI as sg
@@ -17,7 +18,7 @@ FONT_SIZE = 50
 MAX_TEXT_LENGTH = 24
 IMAGE_NORMAL_FACE = 2
 SCREEN_SIZE = (1280, 1024)
-ZUNDAMON = True 
+ZUNDAMON = True
 
 # 状態管理
 state = {
@@ -72,17 +73,33 @@ def get_character_images(image_processor):
     """キャラクター画像を読み込んでリストで返す"""
     if ZUNDAMON:
         return [
-            image_processor.get_zundamon_image("zundamon_normal_close_mouth.png", mouth="*むふ", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_image("zundamon_normal_close_eye.png", eye="*なごみ目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_image("zundamon_normal.png", eye="*普通目" ,left="*基本", right="*基本", size=1.0, flip=False),
-            image_processor.get_zundamon_image("zundamon_normal2.png", eye="*上向き" ,mouth="*むふ" , left="*基本", right="*基本", size=1.0, flip=False)
+            image_processor.get_zundamon_image(
+                "zundamon_normal_close_mouth.png", mouth="*むふ", eye="*普通目",
+                left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image(
+                "zundamon_normal_close_eye.png", eye="*なごみ目",
+                left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image(
+                "zundamon_normal.png", eye="*普通目",
+                left="*基本", right="*基本", size=1.0, flip=False),
+            image_processor.get_zundamon_image(
+                "zundamon_normal2.png", eye="*上向き",
+                mouth="*むふ" , left="*基本", right="*基本", size=1.0, flip=False)
        ]
     else:
         return [
-            image_processor.get_metan_image("metan_normal.png", eye="*普通目", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_image("metan_normal_close_eye.png", eye="*目閉じ", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_image("metan_normal_close_mouth.png", mouth="*ほほえみ", eye="*普通目", right="*普通", left="*普通", size=1.0),
-            image_processor.get_metan_image("metan_normal_close_mouth2.png", mouth="*ほほえみ", eye="*カメラ目線", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image(
+                "metan_normal.png", eye="*普通目",
+                right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image(
+                "metan_normal_close_eye.png", eye="*目閉じ",
+                 right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image(
+                "metan_normal_close_mouth.png", mouth="*ほほえみ",
+                 eye="*普通目", right="*普通", left="*普通", size=1.0),
+            image_processor.get_metan_image(
+                "metan_normal_close_mouth2.png", mouth="*ほほえみ",
+                 eye="*カメラ目線", right="*普通", left="*普通", size=1.0),
         ]
 
 
@@ -122,13 +139,14 @@ def draw_speech_text(display, text, font_size):
 
     # メイン画面に背景をblit
     bg_x = 40
-    bg_y = 690    
+    bg_y = 690
     display.screen.blit(bg_surface, (bg_x, bg_y))
 
     # テキスト描画
     for row, i in enumerate(range(0, len(text), MAX_TEXT_LENGTH)):
         line = text[i:i + MAX_TEXT_LENGTH]
-        display.draw_text_outline(bg_x, bg_y + row * (font_size + 3), line, (255, 102, 255), (255, 255, 255))
+        display.draw_text_outline(
+            bg_x, bg_y + row * (font_size + 3), line, (255, 102, 255), (255, 255, 255))
 
 
 def main_loop(window, client, user_tts, response_tts, display, image_list):

@@ -10,6 +10,7 @@
 - [Open AI](https://pypi.org/project/openai/)
 - [pygame](https://www.pygame.org/news)
 - [voicevox_core](https://github.com/VOICEVOX/voicevox_core/releases)
+- [onnxruntime](https://github.com/microsoft/onnxruntime/releases)
 - [open_jtalk_dic_utf_8-1.11](https://sourceforge.net/projects/open-jtalk/postdownload)
 - [psd-tools](https://psd-tools.readthedocs.io/en/latest/)
 - [PysimpleGUI](https://www.pysimplegui.com/)
